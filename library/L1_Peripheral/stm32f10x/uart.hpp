@@ -2,7 +2,9 @@
 
 #include "L0_Platform/stm32f10x/stm32f10x.h"
 #include "L1_Peripheral/uart.hpp"
+#include "L1_Peripheral/stm32f10x/dma.hpp"
 #include "L1_Peripheral/stm32f10x/pin.hpp"
+#include "utility/bit.hpp"
 
 namespace sjsu::stm32f10x
 {
@@ -252,7 +254,7 @@ class UartBase : public sjsu::Uart
     // Without doing this, the enabled DMA will continue to use up port cycles.
 
     // Disable DMA channel for this UART
-    bit::Register(&port_.dma->CCR).Clear(DmaReg::kEnable).Save();
+    bit::Register(&port_.dma->CCR).Clear(Dma::Reg::kEnable).Save();
     // Disable DMA flag Receive flag in UART control register
     bit::Register(&port_.uart->CR3)
         .Clear(ControlReg::kDmaReceiverEnable)
@@ -291,7 +293,7 @@ class UartBase : public sjsu::Uart
     port_.dma->CMAR  = static_cast<uint32_t>(queue_address);
 
     // Setup DMA Channel Settings
-    port_.dma->CCR = DmaReg::kDmaSettings;
+    port_.dma->CCR = kDmaSettings;
     // Setup UART Control Settings 1
     port_.uart->CR1 = ControlReg::kControlSettings1;
     // Setup UART Control Settings 3
